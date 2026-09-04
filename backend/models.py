@@ -17,7 +17,7 @@ class User(Base):
     is_active = Column(Boolean, default=True)
     is_first_login = Column(Boolean, default=True) 
     
-    # සේවකයින්ගේ (Doctors/Lab Techs) පොදු සහ විශේෂ දත්ත
+    
     employee_id = Column(String, unique=True, index=True, nullable=True) 
     full_name = Column(String, nullable=True)
     dob = Column(Date, nullable=True)
@@ -26,19 +26,19 @@ class User(Base):
     nic = Column(String, nullable=True)
     address = Column(String, nullable=True)
     
-    # වෛද්‍යවරුන් සඳහා පමණක්
+   
     specialization = Column(String, nullable=True) 
     qualifications = Column(String, nullable=True) 
     experience_years = Column(Integer, nullable=True) 
     slmc_number = Column(String, unique=True, index=True, nullable=True)
     
-    # රසායනාගාර ශිල්පීන් සඳහා පමණක්
+    
     mlt_id = Column(String, unique=True, index=True, nullable=True)
 
-    # --- අලුතින් එක් කළ MFA තීරු ---
+    
     mfa_email_enabled = Column(Boolean, default=False)
     mfa_app_enabled = Column(Boolean, default=False)
-    mfa_secret = Column(String, nullable=True) # Authenticator App එක සඳහා
+    mfa_secret = Column(String, nullable=True) 
 
 class Patient(Base):
     __tablename__ = "patients"
@@ -82,7 +82,7 @@ class Appointment(Base):
     slot_number = Column(Integer)
     status = Column(String, default="Pending")
     
-    # --- අලුතින් එක්කළ 'Visit Completed' වේලාව ---
+    
     completed_at = Column(DateTime, nullable=True) 
     
     bill = relationship("Bill", back_populates="appointment", uselist=False)
@@ -97,7 +97,7 @@ class LabTest(Base):
     received_time = Column(DateTime, default=datetime.utcnow) 
     completed_time = Column(DateTime, nullable=True)
     
-    # --- අලුතින් දැමූ SHA-256 Column එක (Report Verification Tool සඳහා) ---
+   
     file_hash = Column(String, nullable=True)
     
     patient = relationship("User")
@@ -132,7 +132,7 @@ class Prescription(Base):
     doctor_note = Column(String, nullable=True)
     is_overridden = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
-    # --- Server එක Crash වෙන්න හේතුවුණු මඟහැරුණු පේළිය ---
+   
     medicines = relationship("PrescriptionItem", back_populates="prescription")
 
 class PrescriptionItem(Base):
@@ -142,7 +142,7 @@ class PrescriptionItem(Base):
     prescription_id = Column(Integer, ForeignKey("prescriptions.id"))
     
     medicine_name = Column(String)
-    # --- අලුතින් එක්කළ ඖෂධ විස්තර 5 ---
+    
     generic_name = Column(String, nullable=True)
     strength = Column(String, nullable=True)
     route = Column(String, nullable=True)
@@ -209,7 +209,7 @@ class PatientActivityLog(Base):
     
     patient = relationship("User", foreign_keys=[patient_id])
 
-# --- අලුතින් එකතු කළ Doctor සහ Lab Tech Immutable Logs ---
+
 class DoctorActivityLog(Base):
     __tablename__ = "doctor_activity_logs"
     
@@ -242,15 +242,15 @@ class EmailOTP(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     otp_code = Column(String)
-    expires_at = Column(DateTime) # විනාඩි 3 කින් කල් ඉකුත් වීමේ නීතිය සඳහා
+    expires_at = Column(DateTime) # 
 
 class Notification(Base):
     __tablename__ = "notifications"
     id = Column(Integer, primary_key=True, index=True)
     patient_id = Column(Integer, ForeignKey("users.id"))
     message = Column(String)
-    notification_type = Column(String) # 'PRESCRIPTION' හෝ 'LAB_REPORT'
-    reference_id = Column(Integer) # අදාළ රිපෝට් එකේ හෝ බෙහෙත් වට්ටෝරුවේ ID එක
+    notification_type = Column(String) # 'PRESCRIPTION'  'LAB_REPORT'
+    reference_id = Column(Integer) # 
     is_read = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
@@ -262,11 +262,11 @@ class UserSession(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
-    session_token = Column(String, unique=True, index=True) # අදාළ JWT Token එක
-    ip_address = Column(String, nullable=True) # ලොග් වුණු IP එක
-    user_agent = Column(String, nullable=True) # Browser එක සහ OS එක (උදා: Chrome on Windows)
+    session_token = Column(String, unique=True, index=True) # 
+    ip_address = Column(String, nullable=True) # 
+    user_agent = Column(String, nullable=True) # 
     created_at = Column(DateTime, default=datetime.utcnow)
-    is_active = Column(Boolean, default=True) # මේක False කළාම Session එක මැකෙනවා
+    is_active = Column(Boolean, default=True) # 
     
     user = relationship("User")
 
@@ -278,7 +278,7 @@ class ProfileChangeRequest(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     patient_id = Column(Integer, ForeignKey("users.id"))
-    requested_field = Column(String) # උදා: "full_name", "nic"
+    requested_field = Column(String) #  "full_name", "nic"
     new_value = Column(String)
     status = Column(String, default="PENDING") # PENDING, APPROVED, REJECTED
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -299,7 +299,7 @@ class MedicineInventory(Base):
     __tablename__ = "medicine_inventory"
     
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True, index=True) # බෙහෙතේ නම (උදා: Panadol)
+    name = Column(String, unique=True, index=True) 
     brand = Column(String) 
     category = Column(String) # Tablet, Syrup, Injection etc.
     unit_price = Column(Float, default=0.0)

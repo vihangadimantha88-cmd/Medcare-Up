@@ -18,11 +18,13 @@ class UserResponse(BaseModel):
     email: str
     role: str
     is_active: bool
+    
+    employee_id: Optional[str] = None
+    full_name: Optional[str] = None
 
     class Config:
         from_attributes = True
 
-# පළමු පිවිසුම් උගුල (Zero-Trust Password Change)
 class PasswordChange(BaseModel):
     username: str
     temp_password: str
@@ -31,22 +33,22 @@ class PasswordChange(BaseModel):
     @field_validator('new_password')
     def validate_password(cls, v):
         if len(v) < 8:
-            raise ValueError('මුරපදයේ අවම වශයෙන් අකුරු 8ක් තිබිය යුතුය.')
+            raise ValueError('Password must contain at least 8 characters.')
         if not re.search(r'[A-Z]', v):
-            raise ValueError('මුරපදයේ අවම වශයෙන් එක් කැපිටල් අකුරක් (A-Z) තිබිය යුතුය.')
+            raise ValueError('Password must contain at least one uppercase letter (A-Z).')
         if not re.search(r'[a-z]', v):
-            raise ValueError('මුරපදයේ අවම වශයෙන් එක් සිම්පල් අකුරක් (a-z) තිබිය යුතුය.')
+            raise ValueError('Password must contain at least one lowercase letter (a-z).')
         if not re.search(r'\d', v):
-            raise ValueError('මුරපදයේ අවම වශයෙන් එක් ඉලක්කමක් (0-9) තිබිය යුතුය.')
+            raise ValueError('Password must contain at least one number (0-9).')
         if not re.search(r'[@#\$%\^&\*\(\)_\+\-\=\[\]\{\};:"\\|,.<>\/\?]', v):
-            raise ValueError('මුරපදයේ අවම වශයෙන් එක් සංකේතයක් (@, #, $) තිබිය යුතුය.')
+            raise ValueError('Password must contain at least one special character.')
         return v
 
 # ==========================================
 # 2. PATIENT REGISTRATION (Self-Registration)
 # ==========================================
 class PatientCreate(BaseModel):
-    full_name: str = Field(..., pattern=r'^[a-zA-Z\s]+$') # අකුරු සහ හිස්තැන් පමණි
+    full_name: str = Field(..., pattern=r'^[a-zA-Z\s]+$') # Letters and spaces only
     dob: date 
     gender: str = Field(..., pattern=r'^[a-zA-Z]+$') 
     nic: str = Field(..., pattern=r'^([0-9]{9}[xXvV]|[0-9]{12})$') 
@@ -57,30 +59,30 @@ class PatientCreate(BaseModel):
     email: str = Field(..., pattern=r'^[\w\.-]+@[\w\.-]+\.\w+$')
     username: str = Field(..., pattern=r'^[a-zA-Z0-9]+$') 
     password: str 
-    consent_agreed: bool # අලුතින් එක් කළ අනිවාර්ය එකඟතාවය
+    consent_agreed: bool # Newly added mandatory consent
 
     # 1. Backend Password Strength Validation
     @field_validator('password')
     def validate_password(cls, v):
-        if len(v) < 8: raise ValueError('මුරපදයේ අවම වශයෙන් අකුරු 8ක් තිබිය යුතුය.')
-        if not re.search(r'[A-Z]', v): raise ValueError('මුරපදයේ අවම වශයෙන් එක් කැපිටල් අකුරක් (A-Z) තිබිය යුතුය.')
-        if not re.search(r'[a-z]', v): raise ValueError('මුරපදයේ අවම වශයෙන් එක් සිම්පල් අකුරක් (a-z) තිබිය යුතුය.')
-        if not re.search(r'\d', v): raise ValueError('මුරපදයේ අවම වශයෙන් එක් ඉලක්කමක් (0-9) තිබිය යුතුය.')
-        if not re.search(r'[@#\$%\^&\*\(\)_\+\-\=\[\]\{\};:"\\|,.<>\/\?]', v): raise ValueError('මුරපදයේ අවම වශයෙන් එක් සංකේතයක් තිබිය යුතුය.')
+        if len(v) < 8: raise ValueError('Password must contain at least 8 characters.')
+        if not re.search(r'[A-Z]', v): raise ValueError('Password must contain at least one uppercase letter (A-Z).')
+        if not re.search(r'[a-z]', v): raise ValueError('Password must contain at least one lowercase letter (a-z).')
+        if not re.search(r'\d', v): raise ValueError('Password must contain at least one number (0-9).')
+        if not re.search(r'[@#\$%\^&\*\(\)_\+\-\=\[\]\{\};:"\\|,.<>\/\?]', v): raise ValueError('Password must contain at least one special character.')
         return v
 
     # 2. Consent Validation
     @field_validator('consent_agreed')
     def check_consent(cls, v):
         if not v:
-            raise ValueError('ලියාපදිංචි වීමට නම් ඔබ Privacy Policy සඳහා අනිවාර්යයෙන්ම එකඟ විය යුතුය.')
+            raise ValueError('You must agree to the Privacy Policy to register.')
         return v
 
 class PatientResponse(BaseModel):
     id: int
-    pid: str # පද්ධතියෙන් හැදෙන P1234 අංකය
+    pid: str # System generated P1234 number
     full_name: str
-    age: int # Backend එකෙන් ගණනය වන වයස
+    age: int # Age calculated by the backend
     nic: str
     contact_number: str
     is_active: bool
@@ -99,10 +101,12 @@ class DoctorCreateAdmin(BaseModel):
     nic: str = Field(..., pattern=r'^([0-9]{9}[xXvV]|[0-9]{12})$')
     email: str = Field(..., pattern=r'^[\w\.-]+@[\w\.-]+\.\w+$')
     home_address: str
-    specialization: str = Field(..., pattern=r'^[a-zA-Z\s]+$') # අකුරු පමණි
-    qualifications: str = Field(..., pattern=r'^[a-zA-Z\.\s]+$') # අකුරු සහ තිත් (උදා: MBBS, MD.)
+    specialization: str = Field(..., pattern=r'^[a-zA-Z\s]+$') 
+    # 🟢 FIX: කොමාව අඩංගු කිරීමට \, එකතු කරන ලදී
+    qualifications: str = Field(..., pattern=r'^[a-zA-Z\.\,\s]+$') 
     experience_years: int
-    slmc_number: str = Field(..., pattern=r'^[a-zA-Z0-9]+$') # අකුරු සහ ඉලක්කම්
+    # 🟢 FIX: ඉරි කෑල්ල අඩංගු කිරීමට \- එකතු කරන ලදී
+    slmc_number: str = Field(..., pattern=r'^[a-zA-Z0-9\-]+$') 
 
 class LabTechCreateAdmin(BaseModel):
     full_name: str = Field(..., pattern=r'^[a-zA-Z\s]+$')
@@ -112,8 +116,9 @@ class LabTechCreateAdmin(BaseModel):
     mobile_number: str = Field(..., pattern=r'^\d{10}$')
     email: str = Field(..., pattern=r'^[\w\.-]+@[\w\.-]+\.\w+$')
     residential_address: str
-    qualifications: str # අකුරු සහ සංකේත සඳහා සාමාන්‍ය string
-    mlt_id: str = Field(..., pattern=r'^[a-zA-Z0-9]+$') # අකුරු සහ ඉලක්කම්
+    qualifications: str 
+    # 🟢 FIX: ඉරි කෑල්ල අඩංගු කිරීමට \- එකතු කරන ලදී
+    mlt_id: str = Field(..., pattern=r'^[a-zA-Z0-9\-]+$')
 
 # ==========================================
 # 4. CLINICAL & HOSPITAL OPERATIONS
@@ -132,7 +137,7 @@ class LabTestResponse(BaseModel):
     received_time: datetime
     completed_time: Optional[datetime] = None
     
-    # --- අලුතින් දැමූ SHA-256 Hash ප්‍රතිදානය (Report Verification Tool සඳහා) ---
+    # --- Newly added SHA-256 Hash output (For Report Verification Tool) ---
     file_hash: Optional[str] = None
 
     class Config:
@@ -191,11 +196,11 @@ class BillResponse(BillBase):
 
 class PrescriptionItemBase(BaseModel):
     medicine_name: str
-    generic_name: str           # --- අලුතින් එක් කළ ---
-    strength: str               # --- අලුතින් එක් කළ ---
-    route: str                  # --- අලුතින් එක් කළ ---
-    quantity: int               # --- අලුතින් එක් කළ ---
-    before_after_meals: str     # --- අලුතින් එක් කළ ---
+    generic_name: str           # --- Newly added ---
+    strength: str               # --- Newly added ---
+    route: str                  # --- Newly added ---
+    quantity: int               # --- Newly added ---
+    before_after_meals: str     # --- Newly added ---
     dose: str
     frequency: str
     duration: str
@@ -217,8 +222,8 @@ class PrescriptionResponse(BaseModel):
     prescription_number: str
     doctor_note: Optional[str] = None
     is_overridden: bool
-    issue_time: datetime
-    items: List[PrescriptionItemResponse] = []
+    created_at: datetime  # <--- Correct name instead of issue_time
+    medicines: List[PrescriptionItemResponse] = [] # <--- Correct name instead of items
 
     class Config:
         from_attributes = True
@@ -237,7 +242,7 @@ class ChatResponse(BaseModel):
 # 6. CLINICAL BLINDNESS DTOs (Data Transfer Objects)
 # ==========================================
 
-# 1. Admin සහ අන් අයට පෙන්වන සීමිත දත්ත ආකෘතිය (Sensitive Data Hidden)
+# 1. Restricted data format shown to Admin and others (Sensitive Data Hidden)
 class PatientProfileBlindResponse(BaseModel):
     access_level: str = "CLINICAL_BLINDNESS_ACTIVE"
     pid: str
@@ -246,12 +251,12 @@ class PatientProfileBlindResponse(BaseModel):
     gender: str
     contact_number: str
     city: str
-    # මෙහි කිසිදු රසායනාගාර වාර්තාවක් හෝ බෙහෙත් වට්ටෝරුවක් අඩංගු නොවේ!
+    # No laboratory reports or prescriptions are included here!
 
     class Config:
         from_attributes = True
 
-# 2. වෛද්‍යවරුන්ට පෙන්වන සම්පූර්ණ දත්ත ආකෘතිය (Full Medical Record)
+# 2. Full data format shown to doctors (Full Medical Record)
 class PatientProfileFullResponse(BaseModel):
     access_level: str = "FULL_MEDICAL_ACCESS"
     pid: str
@@ -260,7 +265,7 @@ class PatientProfileFullResponse(BaseModel):
     gender: str
     contact_number: str
     
-    # වෛද්‍ය දත්ත (Clinical Data)
+    # Clinical Data
     lab_tests: List[LabTestResponse] = []
     prescriptions: List[PrescriptionResponse] = []
 
@@ -299,7 +304,7 @@ class SessionResponse(BaseModel):
     user_agent: Optional[str]
     created_at: datetime
     is_active: bool
-    is_current: Optional[bool] = False # මේකෙන් තමන් දැනට ඉන්න Session එක Highlight කරලා පෙන්වන්න පුළුවන්
+    is_current: Optional[bool] = False # This helps highlight the current active Session
     
     class Config:
         from_attributes = True
@@ -362,7 +367,7 @@ class LabThroughput(BaseModel):
 
 class LabAnalyticsResponse(BaseModel):
     throughput: LabThroughput
-    average_tat_hours: float # Turnaround Time (සාමාන්‍ය කාලය)
+    average_tat_hours: float # Turnaround Time (Average time)
 
 class AdminDashboardResponse(BaseModel):
     total_patients: int
@@ -394,7 +399,7 @@ class DailyRevenue(BaseModel):
     amount: float
 
 class EnhancedAdminDashboard(AdminDashboardResponse):
-    revenue_last_7_days: List[DailyRevenue] = [] # ප්‍රස්ථාර ඇඳීමට (For Line Charts)
+    revenue_last_7_days: List[DailyRevenue] = [] # For rendering graphs (Line Charts)
 
 # --- Security & Privacy Center Schemas ---
 

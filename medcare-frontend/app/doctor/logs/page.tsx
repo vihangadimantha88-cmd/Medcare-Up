@@ -1,0 +1,200 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import axios from "axios";
+import { 
+  Stethoscope, LayoutDashboard, Users, ScrollText, UserCog, LogOut, 
+  Activity, AlertTriangle, ShieldAlert, Clock, Monitor, Globe, CheckCircle2, FlaskConical, Pill
+} from "lucide-react";
+
+export default function DoctorActivityLogsPage() {
+  const router = useRouter();
+  
+  // 🟢 100% Real Data States
+  const [logs, setLogs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const token = localStorage.getItem("medcare_token");
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+    fetchActivityLogs(token);
+  }, [router]);
+
+  // 🚀 FETCH IMMUTABLE LOGS
+  const fetchActivityLogs = async (token: string) => {
+    try {
+      const response = await axios.get("http://localhost:8000/doctors/me/activity-logs", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setLogs(response.data);
+    } catch (err: any) {
+      console.error("Logs fetch error", err);
+      setError("Unable to retrieve activity logs. Please check the secure connection.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("medcare_token");
+    router.push("/login");
+  };
+
+  // UI Logic: Action එක අනුව අයිකනය සහ පාට වෙනස් කිරීම
+  const getActionStyles = (action: string) => {
+    switch (action) {
+      case "WARNING_OVERRIDDEN_BLOCKCHAIN":
+        return { icon: <ShieldAlert size={16} />, color: "text-red-500", bg: "bg-red-950/30", border: "border-red-900/50" };
+      case "PATIENT_ARRIVED":
+        return { icon: <CheckCircle2 size={16} />, color: "text-emerald-500", bg: "bg-emerald-950/30", border: "border-emerald-900/50" };
+      case "PRESCRIBED":
+        return { icon: <Pill size={16} />, color: "text-sky-500", bg: "bg-sky-950/30", border: "border-sky-900/50" };
+      case "SEND_TO_LAB":
+        return { icon: <FlaskConical size={16} />, color: "text-purple-500", bg: "bg-purple-950/30", border: "border-purple-900/50" };
+      case "COMPLETED_APPOINTMENT":
+        return { icon: <Activity size={16} />, color: "text-amber-500", bg: "bg-amber-950/30", border: "border-amber-900/50" };
+      default:
+        return { icon: <Monitor size={16} />, color: "text-slate-400", bg: "bg-slate-900", border: "border-slate-800" };
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-200 flex font-sans overflow-hidden selection:bg-sky-500/30">
+      
+      {/* 🟢 DOCTOR SIDEBAR */}
+      <div className="w-72 bg-slate-950 border-r border-slate-800/60 flex flex-col justify-between hidden md:flex z-20 shadow-[4px_0_24px_rgba(0,0,0,0.4)]">
+        <div>
+          <div className="p-6 border-b border-slate-800/60 flex items-center gap-3 bg-slate-900/20">
+            <Stethoscope className="w-10 h-10 text-sky-400 drop-shadow-[0_0_15px_rgba(56,189,248,0.5)]" />
+            <div>
+              <h1 className="text-sm font-extrabold tracking-widest uppercase text-white leading-tight">MedCare<br/><span className="text-sky-400 text-[10px]">Clinical Workspace</span></h1>
+            </div>
+          </div>
+          
+          <div className="p-4 space-y-2 mt-4">
+            <Link href="/doctor" className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold tracking-widest uppercase transition-all text-slate-500 hover:text-slate-300 hover:bg-slate-900/50">
+              <LayoutDashboard size={18} /> The Clinical Hub
+            </Link>
+            <Link href="/doctor/queue" className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold tracking-widest uppercase transition-all text-slate-500 hover:text-slate-300 hover:bg-slate-900/50">
+              <Users size={18} /> Today's Queue
+            </Link>
+            
+            {/* Active Page */}
+            <div className="w-full flex items-center gap-3 px-4 py-3 bg-sky-900/30 text-sky-400 border border-sky-500/30 rounded-xl text-xs font-bold tracking-widest uppercase shadow-[0_0_20px_rgba(56,189,248,0.15)] transition-all">
+              <ScrollText size={18} /> Activity Logs
+            </div>
+
+            <Link href="/doctor/security" className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold tracking-widest uppercase transition-all text-slate-500 hover:text-slate-300 hover:bg-slate-900/50">
+              <UserCog size={18} /> Profile & Security
+            </Link>
+          </div>
+        </div>
+        <div className="p-4 border-t border-slate-800/60 bg-slate-900/20">
+          <button onClick={handleLogout} className="w-full flex justify-center items-center gap-2 px-4 py-3 bg-slate-900 hover:bg-red-950/40 border border-slate-800 hover:border-red-900/50 text-slate-400 hover:text-red-400 rounded-xl text-xs font-bold tracking-widest uppercase transition-all">
+            <LogOut size={16} /> Secure Logout
+          </button>
+        </div>
+      </div>
+
+      {/* 🟢 MAIN CONTENT AREA */}
+      <div className="flex-1 flex flex-col h-screen overflow-y-auto relative bg-slate-950">
+        <div className="absolute top-0 right-0 w-[800px] h-[500px] bg-sky-500/5 rounded-full blur-[150px] pointer-events-none"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>
+        
+        <div className="p-8 md:p-10 max-w-6xl w-full mx-auto z-10 flex flex-col h-full">
+          
+          <div className="mb-8 flex justify-between items-end">
+            <div>
+              <h2 className="text-3xl font-light tracking-widest uppercase text-white mb-1">
+                Activity <span className="font-bold text-sky-400">Logs</span>
+              </h2>
+              <p className="text-[10px] text-slate-400 tracking-widest uppercase font-mono">Immutable Clinical Audit Trail</p>
+            </div>
+          </div>
+
+          {error && (
+            <div className="mb-6 p-4 rounded-xl border bg-slate-900 border-red-900/50 text-red-400 flex items-start gap-3 z-10 shadow-lg animate-fadeIn">
+              <AlertTriangle size={18} className="mt-0.5 shrink-0" />
+              <div className="text-xs leading-relaxed font-mono">{error}</div>
+            </div>
+          )}
+
+          {loading ? (
+            <div className="flex-1 flex flex-col items-center justify-center text-sky-500/50">
+              <Activity size={40} className="animate-spin-slow mb-4" />
+              <p className="text-xs uppercase tracking-widest font-bold">Decrypting Secure Logs...</p>
+            </div>
+          ) : (
+            <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-3xl p-6 md:p-8 shadow-2xl flex-1 flex flex-col animate-fadeIn">
+              
+              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-800">
+                <ScrollText size={16} className="text-sky-400" />
+                <h3 className="text-xs font-bold text-slate-300 uppercase tracking-widest">Recent Account Activities</h3>
+              </div>
+
+              {logs.length === 0 && !error ? (
+                <div className="flex-1 flex flex-col items-center justify-center border border-dashed border-slate-800 rounded-2xl p-10 opacity-50">
+                  <ScrollText size={48} className="text-slate-600 mb-4" />
+                  <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">No activity recorded</p>
+                </div>
+              ) : (
+                <div className="space-y-4 overflow-y-auto pr-2 custom-scrollbar">
+                  {logs.map((log) => {
+                    const style = getActionStyles(log.action);
+                    const isBlockchain = log.action === "WARNING_OVERRIDDEN_BLOCKCHAIN";
+
+                    return (
+                      <div key={log.id} className={`p-5 rounded-2xl border transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 ${style.bg} ${style.border}`}>
+                        
+                        <div className="flex items-start gap-4">
+                          <div className={`w-10 h-10 rounded-full bg-slate-950 flex items-center justify-center shrink-0 border border-slate-800 ${style.color}`}>
+                            {style.icon}
+                          </div>
+                          <div>
+                            <h4 className={`text-xs font-bold tracking-widest uppercase mb-1 ${style.color}`}>
+                              {log.action.replace(/_/g, " ")}
+                            </h4>
+                            <p className="text-[11px] text-slate-300 font-mono leading-relaxed max-w-2xl break-words">
+                              {log.details}
+                            </p>
+                            
+                            {/* Blockchain Badge for DDI Override */}
+                            {isBlockchain && (
+                               <div className="mt-3 inline-flex items-center gap-1.5 bg-red-950/50 border border-red-900 px-3 py-1.5 rounded-lg text-[9px] font-mono text-red-400 uppercase tracking-widest shadow-[0_0_10px_rgba(220,38,38,0.2)]">
+                                 <ShieldAlert size={12} />
+                                 Anchored to Sepolia Testnet
+                               </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center gap-2 border-t md:border-t-0 border-slate-800/50 pt-3 md:pt-0 shrink-0">
+                          <div className="flex items-center gap-1.5 text-[10px] text-slate-500 font-mono">
+                            <Clock size={12} />
+                            {new Date(log.timestamp).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}
+                          </div>
+                          <div className="flex items-center gap-1.5 text-[9px] text-slate-600 uppercase tracking-widest">
+                            <Globe size={10} />
+                            {log.ip_address}
+                          </div>
+                        </div>
+
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+        </div>
+      </div>
+    </div>
+  );
+}

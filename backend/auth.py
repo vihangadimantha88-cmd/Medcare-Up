@@ -7,9 +7,9 @@ import models
 from database import get_db
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
-SECRET_KEY = "your-super-secret-key-here" # ඔයාගේ පරණ කේතයේ ඇති කී එක
+SECRET_KEY = "your-super-secret-key-here" 
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 1440 # 🚨 FIX: පැය 24ක කාලයක් Token එකට ලබා දීම
+ACCESS_TOKEN_EXPIRE_MINUTES = 1440 
 
 def create_access_token(data: dict):
     to_encode = data.copy()
@@ -26,14 +26,14 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         headers={"WWW-Authenticate": "Bearer"},
     )
     
-    # 1. Database එකෙන් Session එක Active ද කියලා Check කිරීම (Zero-Trust Rule)
+    
     session_record = db.query(models.UserSession).filter(
         models.UserSession.session_token == token,
         models.UserSession.is_active == True
     ).first()
     
     if not session_record:
-        raise credentials_exception # Session එක මකලා නම් අනිවාර්යයෙන්ම එළියට විසි කරනවා!
+        raise credentials_exception 
 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -53,6 +53,6 @@ def require_admin(current_user: models.User = Depends(get_current_user)):
     if current_user.role != "Admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, 
-            detail="මෙම ක්‍රියාව කිරීමට අවසර ඇත්තේ Admin ට පමණි!"
+            detail="Only Admin is allowed to perform this action!"
         )
     return current_user

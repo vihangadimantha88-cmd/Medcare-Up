@@ -1,10 +1,10 @@
 from database import engine
 from models import Base
 
-print("🔴 පරණ වගු (Tables) සියල්ල මකා දමමින් පවතී...")
+print("All old tables are being deleted...")
 Base.metadata.drop_all(bind=engine)
 
-print("🟢 නව තීරු (Columns) සමඟ වගු අලුතින් නිර්මාණය කරමින් පවතී...")
+print("New tables are being created with new columns...")
 Base.metadata.create_all(bind=engine)
 
-print("✅ Database එක සාර්ථකව Reset කරන ලදී!")
+print("Database successfully reset!")
