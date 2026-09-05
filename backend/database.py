@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:admin@localhost:5432/medcare"
+SQLALCHEMY_DATABASE_URL = "postgresql://postgres:medcare67@database1.cutqoo88kac9.us-east-1.rds.amazonaws.com:5432/medcare_db"
 
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
