@@ -1415,8 +1415,14 @@ async def verify_lab_report(file: UploadFile = File(...), db: Session = Depends(
     file_bytes = await file.read()
     uploaded_hash = hashlib.sha256(file_bytes).hexdigest()
     
-    test_record = db.query(models.LabTest).filter(models.LabTest.file_hash == uploaded_hash).first()
+    print(f"🔴 UPLOADED HASH: {uploaded_hash}") 
     
+    # ඩේටාබේස් එකේ තියෙන Hash ටික බලාගන්න මේ පේළි දෙක එකතු කරන්න:
+    all_hashes = [t.file_hash for t in db.query(models.LabTest).all()]
+    print(f"📦 EXISTING HASHES IN DB: {all_hashes}")
+
+    test_record = db.query(models.LabTest).filter(models.LabTest.file_hash == uploaded_hash).first()
+
     if test_record:
         # 🟢 Send 200 OK only if the Hash matches
         return {"status": "AUTHENTIC", "message": "This is the original and authentic report issued by Medcare Hospital."}
