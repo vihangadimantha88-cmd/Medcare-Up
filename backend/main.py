@@ -272,9 +272,12 @@ app = FastAPI(title="Medcare Backend API") # 🔥 This is the missing line!
 # Open the folder corresponding to viewing .png reports for patients
 os.makedirs("uploaded_reports", exist_ok=True)
 app.mount("/uploaded_reports", StaticFiles(directory="uploaded_reports"), name="uploaded_reports")
+frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
+print(f"🌐 ALLOWED FRONTEND URL: {frontend_url}")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"], 
+    allow_origins=[frontend_url], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -292,7 +295,11 @@ def setup_admin_manual(db: Session = Depends(get_db)):
     if admin_exists:
         return {"message": "Admin already exists in the system! You can log in."}
         
-    hashed_pw = hashing.Hash.bcrypt("Medcare@Admin123")
+# අලුත් කෝඩ් එක (os.getenv පාවිච්චි කරලා):
+    admin_password = os.getenv("FIRST_ADMIN_PASSWORD")
+    if not admin_password:
+        raise Exception("CRITICAL: FIRST_ADMIN_PASSWORD is not set in .env file!")
+    hashed_pw = hashing.Hash.bcrypt(admin_password)    
     genesis_admin = models.User(
         username="superadmin", 
         email="admin@medcare.lk", 
@@ -303,9 +310,8 @@ def setup_admin_manual(db: Session = Depends(get_db)):
     )
     db.add(genesis_admin)
     db.commit()
-    
-    return {"message": "🚀 Awesome! GENESIS ADMIN has been newly added to the Database!"}
-# ---------------------------------------------------------
+
+    return {"message": "🚀 Awesome! GENESIS ADMIN has been newly added to the Database!"}# ---------------------------------------------------------
 # NEW FRONTEND REGISTRATION ROUTE (SAVES DIRECTLY TO DB)
 # ---------------------------------------------------------
 class PatientRegisterData(BaseModel):
@@ -1361,7 +1367,9 @@ def pay_bill(bill_id: int, req: Request, db: Session = Depends(get_db), current_
 # LAB TECH MODULE & STEGANOGRAPHY (PDF: 5.3 & Labs)
 # ---------------------------------------------------------
 # 🚨 FIX 1: Route Secret Key to .env according to cyber security standards
-_env_key = os.getenv("FORENSIC_SECRET_KEY", "MedcareSuperSecretForensicKey123")
+_env_key = os.getenv("FORENSIC_SECRET_KEY")
+if not _env_key:
+    raise ValueError("CRITICAL: FORENSIC_SECRET_KEY is missing in .env!")
 FORENSIC_SECRET_KEY = base64.urlsafe_b64encode(_env_key.encode('utf-8').ljust(32, b'0')[:32])
 cipher_suite = Fernet(FORENSIC_SECRET_KEY)
 
