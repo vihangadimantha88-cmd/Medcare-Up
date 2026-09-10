@@ -50,11 +50,9 @@ export default function PatientDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 flex font-sans overflow-hidden">
-      
+<div className="min-h-screen bg-slate-950 text-slate-200 flex font-sans overflow-hidden print:bg-white print:text-black print:h-auto print:overflow-visible">      
       {/* 🟢 FIXED SIDEBAR NAVIGATION */}
-      <div className="w-72 bg-slate-900 border-r border-slate-800 flex flex-col justify-between hidden md:flex z-10">
-        <div>
+      <div className="w-72 bg-slate-900 border-r border-slate-800 flex flex-col justify-between hidden md:flex z-10 print:hidden">        <div>
           <div className="p-6 border-b border-slate-800 flex items-center gap-3">
             <ShieldCheck className="w-10 h-10 text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.4)]" />
             <div>
@@ -95,7 +93,7 @@ export default function PatientDashboard() {
       </div>
 
       {/* 🟢 MAIN CONTENT AREA */}
-      <div className="flex-1 flex flex-col h-screen overflow-y-auto relative">
+      <div className="flex-1 flex flex-col h-screen overflow-y-auto relative print:h-auto print:overflow-visible print:bg-white print:text-black">
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px] pointer-events-none"></div>
         
         <div className="p-8 md:p-12 max-w-5xl w-full mx-auto z-10">

@@ -55,11 +55,9 @@ export default function CurrentBillPage() {
   const handleLogout = () => { localStorage.removeItem("medcare_token"); router.push("/login"); };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 flex font-sans overflow-hidden">
-      
+    <div className="min-h-screen bg-slate-950 text-slate-200 flex font-sans overflow-hidden print:bg-white print:text-black print:h-auto print:overflow-visible">      
       {/* 🟢 FIXED PATIENT SIDEBAR */}
-      <div className="w-64 bg-slate-950 border-r border-slate-800/60 flex flex-col justify-between hidden md:flex z-20 shadow-[4px_0_24px_rgba(0,0,0,0.4)]">
-        <div>
+    <div className="w-64 bg-slate-950 border-r border-slate-800/60 flex flex-col justify-between hidden md:flex z-20 shadow-[4px_0_24px_rgba(0,0,0,0.4)] print:hidden">        <div>
           <div className="p-6 border-b border-slate-800/60 flex items-center gap-3 bg-slate-900/20">
             <ShieldCheck className="w-8 h-8 text-cyan-500 drop-shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
             <div>
@@ -86,10 +84,7 @@ export default function CurrentBillPage() {
       </div>
 
       {/* 🟢 MAIN CONTENT */}
-      <div className="flex-1 flex flex-col h-screen overflow-y-auto p-8 md:p-12 max-w-4xl mx-auto relative">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px] pointer-events-none"></div>
-
-        <Link href="/dashboard/billing" className="inline-flex items-center gap-2 text-slate-500 hover:text-cyan-400 mb-6 text-[10px] font-bold uppercase tracking-widest z-10 transition-colors">
+      <div className="flex-1 flex flex-col h-screen overflow-y-auto p-8 md:p-12 w-full relative print:h-auto print:overflow-visible print:bg-white print:text-black">        <Link href="/dashboard/billing" className="inline-flex items-center gap-2 text-slate-500 hover:text-cyan-400 mb-6 text-[10px] font-bold uppercase tracking-widest z-10 transition-colors">
           <ArrowLeft size={14} /> Back to Billing Hub
         </Link>
 

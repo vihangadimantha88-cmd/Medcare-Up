@@ -60,8 +60,7 @@ export default function PublicPrescriptionVerification() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-cyan-500/30 py-12 px-4 md:px-0">
-      
+    <div className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-cyan-500/30 py-12 px-4 md:px-0 print:bg-white print:text-black print:h-auto print:overflow-visible">      
       <div className="max-w-4xl mx-auto">
         {/* Header / Brand */}
         <div className="flex flex-col items-center justify-center mb-10">
@@ -164,8 +163,7 @@ export default function PublicPrescriptionVerification() {
 
           <div className="bg-slate-950 px-8 py-6 border-t border-slate-800 flex justify-between items-center">
              <p className="text-[9px] text-slate-500 uppercase tracking-widest max-w-sm">This is a digitally verified medical document issued by Project MedCare. Do not dispense medicines if the verification status is failed.</p>
-             <button onClick={() => window.print()} className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center gap-2 border border-slate-700">
-               <Download size={12} /> Print Record
+            <button onClick={() => window.print()} className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center gap-2 border border-slate-700 print:hidden">               <Download size={12} /> Print Record
              </button>
           </div>
 

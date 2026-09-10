@@ -1,5 +1,6 @@
 "use client";
 
+import { formatDateTime } from "@/utils/dateFormatter";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -80,11 +81,6 @@ export default function UpcomingAppointmentsPage() {
   };
 
   
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
-    });
-  };
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200 flex font-sans overflow-hidden">
@@ -189,8 +185,7 @@ export default function UpcomingAppointmentsPage() {
                       <div className="flex flex-col sm:flex-row gap-4 mt-4">
                         <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-400 bg-slate-950 px-4 py-2 rounded-xl border border-slate-800">
                           <CalendarClock size={14} className="text-purple-400" />
-                          {formatDate(apt.date)}
-                        </div>
+                          {formatDateTime(apt.date)}                        </div>
                         <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-400 bg-slate-950 px-4 py-2 rounded-xl border border-slate-800">
                           <User size={14} className="text-purple-400" />
                           Queue Slot: <span className="text-white text-lg font-mono ml-1">{String(apt.slot_number).padStart(2, '0')}</span>
