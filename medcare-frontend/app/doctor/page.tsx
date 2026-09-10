@@ -39,7 +39,7 @@ export default function DoctorClinicalHub() {
     setError("");
     
     try {
-      const response = await axios.get("http://localhost:8000/doctors/me/analytics", {
+      const response = await axios.get("http://34.229.165.55:8000/doctors/me/analytics", {
         headers: { Authorization: `Bearer ${token}` },
         params: { period: filterPeriod }
       });

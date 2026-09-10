@@ -34,7 +34,7 @@ export default function BookAppointmentPage() {
 
   const fetchSchedules = async (token: string) => {
     try {
-      const response = await axios.get("http://localhost:8000/schedules/available", {
+      const response = await axios.get("http://34.229.165.55:8000/schedules/available", {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -56,7 +56,7 @@ export default function BookAppointmentPage() {
 
     try {
       const token = localStorage.getItem("medcare_token");
-      await axios.post("http://localhost:8000/appointments/", {
+      await axios.post("http://34.229.165.55:8000/appointments/", {
         doctor_name: selectedDoctor.doctor_username,
         date: selectedDate,
         slot_number: selectedSlot

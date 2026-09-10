@@ -75,8 +75,8 @@ export default function LabTechSecurityPage() {
     
     try {
       const [profileRes, sessionsRes] = await Promise.all([
-        axios.get("http://localhost:8000/lab-tech/profile", config),
-        axios.get("http://localhost:8000/auth/sessions/me", config)
+        axios.get("http://34.229.165.55:8000/lab-tech/profile", config),
+        axios.get("http://34.229.165.55:8000/auth/sessions/me", config)
       ]);
 
       const profData = profileRes.data;
@@ -109,7 +109,7 @@ export default function LabTechSecurityPage() {
     try {
       const token = localStorage.getItem("medcare_token");
       if (!token) return;
-      await axios.put("http://localhost:8000/lab-tech/me/profile/editable", {
+      await axios.put("http://34.229.165.55:8000/lab-tech/me/profile/editable", {
         contact_number: editPhone,
         email: editEmail
       }, { headers: { Authorization: `Bearer ${token}` } });
@@ -133,7 +133,7 @@ export default function LabTechSecurityPage() {
     try {
       const token = localStorage.getItem("medcare_token");
       if (!token) return;
-      await axios.put("http://localhost:8000/auth/security/change-password", {
+      await axios.put("http://34.229.165.55:8000/auth/security/change-password", {
         current_password: currentPassword,
         new_password: newPassword
       }, { headers: { Authorization: `Bearer ${token}` } });
@@ -155,7 +155,7 @@ export default function LabTechSecurityPage() {
     try {
       const token = localStorage.getItem("medcare_token");
       if (!token) return;
-      await axios.post(`http://localhost:8000/auth/mfa/toggle-email?enable=${newStatus}`, {}, {
+      await axios.post(`http://34.229.165.55:8000/auth/mfa/toggle-email?enable=${newStatus}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMfaEmailEnabled(newStatus);
@@ -172,7 +172,7 @@ export default function LabTechSecurityPage() {
     try {
       const token = localStorage.getItem("medcare_token");
       if (!token) return;
-      const res = await axios.post("http://localhost:8000/auth/mfa/setup-app", {}, {
+      const res = await axios.post("http://34.229.165.55:8000/auth/mfa/setup-app", {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setQrCodeUri(res.data.qr_uri);
@@ -193,7 +193,7 @@ export default function LabTechSecurityPage() {
     try {
       const token = localStorage.getItem("medcare_token");
       if (!token) return;
-      await axios.post("http://localhost:8000/auth/mfa/verify-app", { app_code: verificationCode }, {
+      await axios.post("http://34.229.165.55:8000/auth/mfa/verify-app", { app_code: verificationCode }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMfaAppEnabled(true);
@@ -213,7 +213,7 @@ export default function LabTechSecurityPage() {
     try {
       const token = localStorage.getItem("medcare_token");
       if (!token) return;
-      await axios.post("http://localhost:8000/auth/mfa/disable-app", {}, {
+      await axios.post("http://34.229.165.55:8000/auth/mfa/disable-app", {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMfaAppEnabled(false);
@@ -229,7 +229,7 @@ export default function LabTechSecurityPage() {
     try {
       const token = localStorage.getItem("medcare_token");
       if (!token) return;
-      await axios.delete("http://localhost:8000/auth/sessions/revoke-others", {
+      await axios.delete("http://34.229.165.55:8000/auth/sessions/revoke-others", {
         headers: { Authorization: `Bearer ${token}` }
       });
       showToast("All other remote sessions have been securely wiped.", "success");

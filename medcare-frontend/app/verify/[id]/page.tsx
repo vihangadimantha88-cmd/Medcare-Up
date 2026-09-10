@@ -25,7 +25,7 @@ export default function PublicPrescriptionVerification() {
   const verifyPrescription = async (id: string) => {
     try {
       // 🚨 Public API Call (No Authorization Headers needed)
-      const response = await axios.get(`http://localhost:8000/verify/prescription/${id}`);
+      const response = await axios.get(`http://34.229.165.55:8000/verify/prescription/${id}`);
       setData(response.data);
     } catch (err: any) {
       console.error("Verification Error:", err);

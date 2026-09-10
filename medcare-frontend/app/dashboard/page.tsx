@@ -26,8 +26,8 @@ export default function PatientDashboard() {
       try {
         const config = { headers: { Authorization: `Bearer ${token}` } };
         const [profileRes, notifRes] = await Promise.all([
-          axios.get("http://localhost:8000/patients/me/profile", config),
-          axios.get("http://localhost:8000/patients/me/notifications", config)
+          axios.get("http://34.229.165.55:8000/patients/me/profile", config),
+          axios.get("http://34.229.165.55:8000/patients/me/notifications", config)
         ]);
         
         setPatientName(profileRes.data.first_name || "Patient");

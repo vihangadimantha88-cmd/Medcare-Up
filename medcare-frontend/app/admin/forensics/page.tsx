@@ -39,7 +39,7 @@ export default function DigitalForensicsPage() {
       const token = localStorage.getItem("medcare_token");
       
       
-      const response = await axios.post("http://localhost:8000/admin/forensics/decrypt", formData, {
+      const response = await axios.post("http://34.229.165.55:8000/admin/forensics/decrypt", formData, {
         headers: { 
           "Authorization": `Bearer ${token}`,
           "Content-Type": "multipart/form-data" 

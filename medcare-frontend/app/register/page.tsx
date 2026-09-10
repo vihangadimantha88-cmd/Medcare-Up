@@ -67,7 +67,7 @@ export default function RegisterPage() {
 
     try {
       
-      const response = await axios.post("http://localhost:8000/register", {
+      const response = await axios.post("http://34.229.165.55:8000/register", {
         ...formData,
         password: password,
       });

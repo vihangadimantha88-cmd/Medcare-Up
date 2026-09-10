@@ -49,7 +49,7 @@ export default function ForceChangePasswordPage() {
 
     try {
       // 🚀 2. Backend API - ඔයාගේ ෆොටෝ එකේ තිබුණු Endpoint එක සහ Payload එක
-      await axios.post("http://localhost:8000/auth/force-change-password", {
+      await axios.post("http://34.229.165.55:8000/auth/force-change-password", {
         username: username,
         temp_password: tempPassword,
         new_password: newPassword

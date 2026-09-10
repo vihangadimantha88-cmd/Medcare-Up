@@ -51,7 +51,7 @@ export default function LabTechDashboard() {
     setError("");
 
     try {
-      const response = await axios.get("http://localhost:8000/lab-tech/dashboard", {
+      const response = await axios.get("http://34.229.165.55:8000/lab-tech/dashboard", {
         headers: { Authorization: `Bearer ${token}` }
       });
       setDashboardData(response.data);
@@ -77,7 +77,7 @@ export default function LabTechDashboard() {
     try {
       const token = localStorage.getItem("medcare_token");
       if (!token) return; // 🟢 මේ පේළිය එකතු කරන්න (TS Error එක මකා දැමීමට)
-      await axios.put(`http://localhost:8000/lab-tests/${testId}/collect`, {}, {
+      await axios.put(`http://34.229.165.55:8000/lab-tests/${testId}/collect`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -113,7 +113,7 @@ export default function LabTechDashboard() {
     try {
       const token = localStorage.getItem("medcare_token");
       if (!token) return; // 🟢 මේ පේළිය එකතු කරන්න (TS Error එක මකා දැමීමට)
-      const response = await axios.post(`http://localhost:8000/lab-tests/${selectedTestId}/upload`, formData, {
+      const response = await axios.post(`http://34.229.165.55:8000/lab-tests/${selectedTestId}/upload`, formData, {
         headers: { 
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data"

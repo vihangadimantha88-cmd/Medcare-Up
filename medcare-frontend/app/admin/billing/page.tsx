@@ -23,7 +23,7 @@ export default function AutomatedBillingDesk() {
   // 🚀 FIXED API: /admin/billing/live-desk
   const fetchBills = async (token: string) => {
     try {
-      const response = await axios.get("http://localhost:8000/admin/billing/live-desk", { headers: { Authorization: `Bearer ${token}` } });
+      const response = await axios.get("http://34.229.165.55:8000/admin/billing/live-desk", { headers: { Authorization: `Bearer ${token}` } });
       setPendingBills(response.data || []);
     } catch (err) { console.error(err); } finally { setLoading(false); }
   };
@@ -32,7 +32,7 @@ export default function AutomatedBillingDesk() {
   const handlePay = async (billId: number) => {
     setProcessingId(billId);
     try {
-      await axios.post(`http://localhost:8000/bills/${billId}/pay`, {}, {
+      await axios.post(`http://34.229.165.55:8000/bills/${billId}/pay`, {}, {
         headers: { Authorization: `Bearer ${localStorage.getItem("medcare_token")}` }
       });
       setPendingBills(prev => prev.filter(b => b.bill_id !== billId));

@@ -25,7 +25,7 @@ export default function AdminCommandCenter() {
   const fetchRealTimeData = async (token: string, filterPeriod: string) => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:8000/admin/dashboard/bi-metrics", {
+      const response = await axios.get("http://34.229.165.55:8000/admin/dashboard/bi-metrics", {
         headers: { Authorization: `Bearer ${token}` },
         params: { period: filterPeriod }
       });

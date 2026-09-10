@@ -20,7 +20,7 @@ export default function ScheduleManagementPage() {
   useEffect(() => {
     const token = localStorage.getItem("medcare_token");
     if (!token) { router.push("/login"); return; }
-    axios.get("http://localhost:8000/admin/users/", { headers: { Authorization: `Bearer ${token}` } })
+    axios.get("http://34.229.165.55:8000/admin/users/", { headers: { Authorization: `Bearer ${token}` } })
       .then(res => setDoctors(res.data.filter((u: any) => u.role === "Doctor")));
   }, [router]);
 
@@ -32,7 +32,7 @@ export default function ScheduleManagementPage() {
     setSelectedDate("");
     
     try {
-      const res = await axios.get(`http://localhost:8000/admin/schedules/doctor/${username}`, {
+      const res = await axios.get(`http://34.229.165.55:8000/admin/schedules/doctor/${username}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("medcare_token")}` }
       });
       setExistingSchedules(res.data);
@@ -43,7 +43,7 @@ export default function ScheduleManagementPage() {
     e.preventDefault();
     if (!selectedDoctorName || !selectedDate) return alert("Select Doctor & Date!");
     try {
-      await axios.post("http://localhost:8000/admin/schedules/", {
+      await axios.post("http://34.229.165.55:8000/admin/schedules/", {
         doctor_name: selectedDoctorName, date: selectedDate, start_time: formData.startTime, end_time: formData.endTime, max_patients: formData.maxPatients
       }, { headers: { Authorization: `Bearer ${localStorage.getItem("medcare_token")}` } });
       alert("Schedule Created!");

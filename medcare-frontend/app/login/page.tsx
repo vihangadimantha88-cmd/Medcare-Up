@@ -34,7 +34,7 @@ export default function LoginPage() {
       formData.append("username", username);
       formData.append("password", password);
 
-      const response = await axios.post("http://localhost:8000/login", formData, {
+      const response = await axios.post("http://34.229.165.55:8000/login", formData, {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
       });
 
@@ -68,7 +68,7 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const response = await axios.post("http://localhost:8000/login/mfa", {
+      const response = await axios.post("http://34.229.165.55:8000/login/mfa", {
         temp_token: tempToken,
         email_otp: emailOtp || undefined,
         app_totp: appTotp || undefined

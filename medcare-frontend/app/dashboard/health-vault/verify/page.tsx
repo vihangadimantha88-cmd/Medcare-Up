@@ -36,7 +36,7 @@ export default function ReportVerificationPage() {
     // 🚀 Fetch real patient name from backend for the unified sidebar
     const fetchProfile = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/patients/me/profile", {
+        const response = await axios.get("http://34.229.165.55:8000/patients/me/profile", {
           headers: { Authorization: `Bearer ${token}` }
         });
         setPatientName(response.data.first_name || "Patient");
@@ -82,7 +82,7 @@ export default function ReportVerificationPage() {
       const formData = new FormData();
       formData.append("file", selectedFile);
 
-      const response = await axios.post("http://localhost:8000/patients/verify-report", formData, {
+      const response = await axios.post("http://34.229.165.55:8000/patients/verify-report", formData, {
         headers: { 
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}` 

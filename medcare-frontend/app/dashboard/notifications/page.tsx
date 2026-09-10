@@ -28,13 +28,13 @@ export default function NotificationsPage() {
   const fetchNotifications = async (token: string) => {
     try {
       // Get User Name
-      const profileRes = await axios.get("http://localhost:8000/patients/me/profile", {
+      const profileRes = await axios.get("http://34.229.165.55:8000/patients/me/profile", {
         headers: { Authorization: `Bearer ${token}` }
       });
       setPatientName(profileRes.data.first_name || "Patient");
 
       // Get Notifications List
-      const notifRes = await axios.get("http://localhost:8000/patients/me/notifications", {
+      const notifRes = await axios.get("http://34.229.165.55:8000/patients/me/notifications", {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -52,7 +52,7 @@ export default function NotificationsPage() {
 
     try {
       const token = localStorage.getItem("medcare_token");
-      await axios.put(`http://localhost:8000/notifications/${notifId}/read`, {}, {
+      await axios.put(`http://34.229.165.55:8000/notifications/${notifId}/read`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
 

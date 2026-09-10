@@ -34,7 +34,7 @@ export default function ProfileManagementPage() {
 
   const fetchProfileData = async (token: string) => {
     try {
-      const response = await axios.get("http://localhost:8000/patients/me/profile", {
+      const response = await axios.get("http://34.229.165.55:8000/patients/me/profile", {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -83,7 +83,7 @@ export default function ProfileManagementPage() {
         emergency_contact: "Not Specified" // fallback
       };
 
-      await axios.put("http://localhost:8000/patients/me/profile/editable", payload, {
+      await axios.put("http://34.229.165.55:8000/patients/me/profile/editable", payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
 

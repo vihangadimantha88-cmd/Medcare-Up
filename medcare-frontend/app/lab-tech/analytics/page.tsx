@@ -37,7 +37,7 @@ export default function LabTechAnalyticsPage() {
     setError("");
 
     try {
-      const response = await axios.get("http://localhost:8000/lab-tech/dashboard/analytics", {
+      const response = await axios.get("http://34.229.165.55:8000/lab-tech/dashboard/analytics", {
         headers: { Authorization: `Bearer ${token}` },
         params: { period: filterPeriod }
       });

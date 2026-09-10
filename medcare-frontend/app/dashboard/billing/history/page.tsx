@@ -25,7 +25,7 @@ export default function BillHistoryPage() {
 
   const fetchProfile = async (token: string) => {
     try {
-      const response = await axios.get("http://localhost:8000/patients/me/profile", {
+      const response = await axios.get("http://34.229.165.55:8000/patients/me/profile", {
         headers: { Authorization: `Bearer ${token}` }
       });
       setPatientName(response.data.first_name || "Patient");
@@ -35,7 +35,7 @@ export default function BillHistoryPage() {
   const fetchHistoryData = async (token: string) => {
     try {
       // 🚀 FIXED: Exactly matching the Backend Endpoint
-      const response = await axios.get("http://localhost:8000/patients/me/billing/history", {
+      const response = await axios.get("http://34.229.165.55:8000/patients/me/billing/history", {
         headers: { Authorization: `Bearer ${token}` }
       });
       setHistoryData(response.data);

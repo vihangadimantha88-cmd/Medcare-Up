@@ -47,7 +47,7 @@ export default function DeviceAuthPage() {
   const fetchInitialData = async (token: string) => {
     try {
       // 1. Fetch Profile for MFA Status & Sidebar Name
-      const profileRes = await axios.get("http://localhost:8000/patients/me/profile", {
+      const profileRes = await axios.get("http://34.229.165.55:8000/patients/me/profile", {
         headers: { Authorization: `Bearer ${token}` }
       });
       setPatientName(profileRes.data.first_name || "Patient");
@@ -56,7 +56,7 @@ export default function DeviceAuthPage() {
       setAppMfaEnabled(profileRes.data.mfa_app_enabled);
 
       // 2. Fetch Active Sessions
-      const sessionsRes = await axios.get("http://localhost:8000/auth/sessions/me", {
+      const sessionsRes = await axios.get("http://34.229.165.55:8000/auth/sessions/me", {
         headers: { Authorization: `Bearer ${token}` }
       });
       setSessions(sessionsRes.data);
@@ -85,7 +85,7 @@ export default function DeviceAuthPage() {
     try {
       const token = localStorage.getItem("medcare_token");
       const newState = !emailMfaEnabled;
-      await axios.post(`http://localhost:8000/auth/mfa/toggle-email?enable=${newState}`, {}, {
+      await axios.post(`http://34.229.165.55:8000/auth/mfa/toggle-email?enable=${newState}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setEmailMfaEnabled(newState);
@@ -102,7 +102,7 @@ export default function DeviceAuthPage() {
     setActionLoading(true);
     try {
       const token = localStorage.getItem("medcare_token");
-      const response = await axios.post("http://localhost:8000/auth/mfa/setup-app", {}, {
+      const response = await axios.post("http://34.229.165.55:8000/auth/mfa/setup-app", {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setTotpSecret(response.data.secret);
@@ -123,7 +123,7 @@ export default function DeviceAuthPage() {
     setActionLoading(true);
     try {
       const token = localStorage.getItem("medcare_token");
-      await axios.post("http://localhost:8000/auth/mfa/verify-app", 
+      await axios.post("http://34.229.165.55:8000/auth/mfa/verify-app", 
       { app_code: appVerifyCode }, 
       { headers: { Authorization: `Bearer ${token}` } });
       
@@ -143,7 +143,7 @@ export default function DeviceAuthPage() {
     setActionLoading(true);
     try {
       const token = localStorage.getItem("medcare_token");
-      await axios.post("http://localhost:8000/auth/mfa/disable-app", {}, {
+      await axios.post("http://34.229.165.55:8000/auth/mfa/disable-app", {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setAppMfaEnabled(false);
@@ -165,7 +165,7 @@ export default function DeviceAuthPage() {
     setActionLoading(true);
     try {
       const token = localStorage.getItem("medcare_token");
-      await axios.put("http://localhost:8000/auth/security/change-password", {
+      await axios.put("http://34.229.165.55:8000/auth/security/change-password", {
         current_password: currentPassword,
         new_password: newPassword
       }, { headers: { Authorization: `Bearer ${token}` } });
@@ -186,7 +186,7 @@ export default function DeviceAuthPage() {
     setActionLoading(true);
     try {
       const token = localStorage.getItem("medcare_token");
-      await axios.delete("http://localhost:8000/auth/sessions/revoke-others", {
+      await axios.delete("http://34.229.165.55:8000/auth/sessions/revoke-others", {
         headers: { Authorization: `Bearer ${token}` }
       });
       showMessage("All other sessions revoked successfully.", "success");

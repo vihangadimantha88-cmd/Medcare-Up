@@ -41,7 +41,7 @@ export default function TodaysQueuePage() {
     setError("");
 
     try {
-      const response = await axios.get("http://localhost:8000/doctors/me/dashboard", {
+      const response = await axios.get("http://34.229.165.55:8000/doctors/me/dashboard", {
         headers: { Authorization: `Bearer ${token}` }
       });
       

@@ -30,7 +30,7 @@ export default function LabTechActivityLogsPage() {
   // 🚀 Fetch Immutable Logs from Backend
   const fetchActivityLogs = async (token: string) => {
     try {
-      const response = await axios.get("http://localhost:8000/lab-tech/me/activity-logs", {
+      const response = await axios.get("http://34.229.165.55:8000/lab-tech/me/activity-logs", {
         headers: { Authorization: `Bearer ${token}` }
       });
       setLogs(response.data);

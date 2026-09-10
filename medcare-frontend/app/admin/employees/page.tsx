@@ -43,7 +43,7 @@ export default function EmployeeManagementPage() {
 
   const fetchEmployees = async (token: string) => {
     try {
-      const response = await axios.get("http://localhost:8000/admin/users/", {
+      const response = await axios.get("http://34.229.165.55:8000/admin/users/", {
         headers: { Authorization: `Bearer ${token}` }
       });
       const staff = response.data.filter((u: any) => u.role === "Doctor" || u.role === "Lab Technician");
@@ -75,7 +75,7 @@ export default function EmployeeManagementPage() {
       let payload = {};
 
       if (formData.role === "Doctor") {
-        endpoint = "http://localhost:8000/admin/doctors/";
+        endpoint = "http://34.229.165.55:8000/admin/doctors/";
         payload = {
           full_name: `${formData.first_name} ${formData.last_name}`,
           dob: formData.dob,
@@ -90,7 +90,7 @@ export default function EmployeeManagementPage() {
           experience_years: parseInt(formData.experience_years) || 0 
         };
       } else {
-        endpoint = "http://localhost:8000/admin/lab-techs/";
+        endpoint = "http://34.229.165.55:8000/admin/lab-techs/";
         payload = {
           full_name: `${formData.first_name} ${formData.last_name}`,
           dob: formData.dob,
@@ -138,7 +138,7 @@ export default function EmployeeManagementPage() {
 
     try {
       const token = localStorage.getItem("medcare_token");
-      await axios.put(`http://localhost:8000/admin/users/${employeeId}/deactivate`, {}, {
+      await axios.put(`http://34.229.165.55:8000/admin/users/${employeeId}/deactivate`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
 

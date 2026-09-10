@@ -30,7 +30,7 @@ export default function UpcomingAppointmentsPage() {
   
   const fetchUpcomingAppointments = async (token: string) => {
     try {
-      const response = await axios.get("http://localhost:8000/appointments/me/upcoming", {
+      const response = await axios.get("http://34.229.165.55:8000/appointments/me/upcoming", {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -54,7 +54,7 @@ export default function UpcomingAppointmentsPage() {
 
     try {
       const token = localStorage.getItem("medcare_token");
-      await axios.put(`http://localhost:8000/appointments/${appointmentId}/cancel`, {}, {
+      await axios.put(`http://34.229.165.55:8000/appointments/${appointmentId}/cancel`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
