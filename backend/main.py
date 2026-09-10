@@ -1,5 +1,7 @@
 from typing import List, Optional
+from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, date, time, timedelta
+from database import SessionLocal
 from fastapi import FastAPI, Depends, HTTPException, status, File, UploadFile, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
@@ -182,29 +184,71 @@ def mark_no_shows_cron_job():
     db.close()
     print("[CRON] Marked missed appointments as 'No Show'")
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(mark_no_shows_cron_job, 'cron', hour=0, minute=1)
-    scheduler.add_job(send_appointment_reminders, 'cron', hour=8, minute=0) # Send Reminders at 8 AM
-    scheduler.start()
-    
-    db = next(get_db())
-    admin_exists = db.query(models.User).filter(models.User.role == "Admin").first()
-    if not admin_exists:
-        hashed_pw = hashing.Hash.bcrypt("Medcare@Admin123")
-# 🚨 FIX 1: Enable First Login security when creating Genesis Admin
-        genesis_admin = models.User(username="superadmin", email="admin@medcare.lk", hashed_password=hashed_pw, role="Admin", is_active=True, is_first_login=True)
-        db.add(genesis_admin)
-        db.commit()
-        print("="*50)
-        print("🚀 [SYSTEM DEPLOYMENT] GENESIS ADMIN CREATED!")
-        print("="*50)
-    db.close()
-    
-    yield
-    scheduler.shutdown()
+from datetime import datetime, timedelta
+from database import SessionLocal
 
+# 1. No-Show එක අප්ඩේට් කරන ෆන්ක්ෂන් එක
+def mark_no_shows_cron_job():
+    db = SessionLocal() # Background job එකට වෙනම DB Session එකක් ගන්නවා
+    try:
+        today = datetime.now().date()
+        missed_appointments = db.query(models.Appointment).filter(
+            models.Appointment.status == "Pending",
+            models.Appointment.date < today
+        ).all()
+
+        for appt in missed_appointments:
+            appt.status = "No Show"
+
+        db.commit()
+        print(f"[{datetime.now()}] CRON: {len(missed_appointments)} old appointments marked as 'No Show'.")
+    except Exception as e:
+        db.rollback()
+        print(f"Error in No-Show Cron Job: {e}")
+    finally:
+        db.close()
+
+# 2. Reminders යවන ෆන්ක්ෂන් එක
+def send_appointment_reminders():
+    db = SessionLocal()
+    try:
+        tomorrow = datetime.now().date() + timedelta(days=1)
+        upcoming_appointments = db.query(models.Appointment).filter(
+            models.Appointment.status == "Pending",
+            models.Appointment.date == tomorrow
+        ).all()
+
+        count = 0
+        for appt in upcoming_appointments:
+            # මේ Reminder එක කලින් යවලා තියෙනවද බලනවා
+            existing_notif = db.query(models.Notification).filter(
+                models.Notification.patient_id == appt.patient_id,
+                models.Notification.reference_id == appt.id,
+                models.Notification.notification_type == "REMINDER"
+            ).first()
+            
+            if not existing_notif:
+                new_notif = models.Notification(
+                    patient_id=appt.patient_id,
+                    message=f"Reminder: You have an appointment with {appt.doctor_name} tomorrow. Slot: {appt.slot_number}",
+                    notification_type="REMINDER",
+                    reference_id=appt.id
+                )
+                db.add(new_notif)
+                count += 1
+
+        db.commit()
+        print(f"[{datetime.now()}] CRON: {count} Reminders sent for tomorrow's appointments.")
+    except Exception as e:
+        db.rollback()
+        print(f"Error in Reminder Cron Job: {e}")
+    finally:
+        db.close()
+
+# ==========================================
+# (ඔයාගේ lifespan function එක මෙතනට යටින් තියන්න)
+# @asynccontextmanager ...
+# ==========================================
 # =========================================================
 # AUDIT LOGGING HELPERS (IP Tracking for all 4 Roles)
 # =========================================================
@@ -404,8 +448,8 @@ def login_mfa_verify(request: schemas.LoginMFARequest, req: Request, db: Session
         if not totp.verify(request.app_totp):
             raise HTTPException(status_code=401, detail="Invalid Authenticator App code.")
 
-    access_token = auth.create_access_token(data={"sub": user.username})
-    
+    access_token = auth.create_access_token(data={"sub": user.username, "mfa_verified": True})
+
     # 🚨 FIX: Bring client_ip up to prevent Server Crash
     client_ip = req.client.host if req else "Unknown"
     
@@ -613,8 +657,7 @@ def get_monthly_schedules(year: int, month: int, db: Session = Depends(get_db)):
             "specialization": sch.doctor.specialization
         })
     return schedule_data
-@app.get("/admin/schedules/doctor/{doctor_username}", tags=["Admin Operations"])
-def get_doctor_existing_schedules(doctor_username: str, db: Session = Depends(get_db), current_user: models.User = Depends(auth.require_admin)):
+
     """Send already scheduled dates to lock them in the Admin Calendar"""
     doctor = db.query(models.User).filter(models.User.username == doctor_username).first()
     if not doctor: raise HTTPException(status_code=404, detail="Doctor not found")
@@ -1207,8 +1250,7 @@ def get_my_profile(db: Session = Depends(get_db), current_user: models.User = De
         "mfa_email_enabled": current_user.mfa_email_enabled, "mfa_app_enabled": current_user.mfa_app_enabled
     }
 
-@app.get("/patients/me/notifications", response_model=List[schemas.NotificationResponse], tags=["Notifications"])
-def get_my_notifications(db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
+
     """Retrieve patient's Notifications"""
     return db.query(models.Notification).filter(models.Notification.patient_id == current_user.id).order_by(models.Notification.created_at.desc()).all()
 
@@ -2815,3 +2857,9 @@ def get_doctor_existing_schedules(doctor_username: str, db: Session = Depends(ge
     
     schedules = db.query(models.DoctorSchedule).filter(models.DoctorSchedule.doctor_id == doctor.id).all()
     return [str(sch.date) for sch in schedules]
+
+@app.post("/admin/trigger-cron-jobs", tags=["Admin Testing"])
+def trigger_jobs_manually(current_user: models.User = Depends(auth.require_admin)):
+    mark_no_shows_cron_job()
+    send_appointment_reminders()
+    return {"message": "Background tasks executed successfully! Check terminal logs."}
